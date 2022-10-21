@@ -3,11 +3,17 @@ import ReactDOM from 'react-dom/client';
 import './index.css';
 import App from './App';
 import reportWebVitals from './reportWebVitals';
+import { StateContext } from './lib/context';
+import ErrorBoundry from './components/ErrorBoundry';
 
 const root = ReactDOM.createRoot(document.getElementById('root'));
 root.render(
   <React.StrictMode>
-    <App />
+    <StateContext>
+      <ErrorBoundry>
+        <App />
+      </ErrorBoundry>
+    </StateContext>
   </React.StrictMode>
 );
 
