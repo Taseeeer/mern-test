@@ -1,3 +1,6 @@
+# Please enable CORS from backend.
+# I am only updating my client repo.
+
 # Getting Started with Create React App
 
 This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
