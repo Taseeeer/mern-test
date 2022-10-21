@@ -6,6 +6,7 @@ import { AppContext } from '../lib/context';
 export default function Items() {
 
     const [ data, setData ] = useState([]);
+    const [ search, setSearch ] = useState('');
 
     const [ isUpdate, setIsUpdate ] = useState(false);
     const [ updateItemState, setUpdateItemState ] = useState({
@@ -34,17 +35,16 @@ export default function Items() {
 
   const removeItem = (id) => { 
     fetch(`http://localhost:3000/items/${id}`, { method: "DELETE" });
+    const items = data.filter(item => item.id !== id);
+    setData(items);
   }
 
   const handleItemUpdate = (id) => {
     setIsUpdate(!isUpdate);
-
     updateItemState.id = id;
-    console.log(updateItemState);
   }
 
   const handleSubmit = (e) => {
-    console.log(updateItemState)
     e.preventDefault();
     const requestOptions = {
         method: 'PUT',
@@ -52,13 +52,20 @@ export default function Items() {
         body: JSON.stringify(updateItemState)
     };
 
-    const res = fetch('http://localhost:3000/items/6', requestOptions);
+    const res = fetch(`http://localhost:3000/items/${updateItemState.id}`, requestOptions);
   }
 
-  return (
-      <Layout>
+  const renderAllItems = (search) => {
+
+    return  (
         <dl className='flex flex-wrap gap-4 p-4'>
-            { data?.map((item, index) => (
+            { data.filter(items => {
+              if(search === '') {
+                return items;
+              } else if(items.name.toLowerCase().includes(search.toLowerCase())) {
+                return items;
+              }
+            }).map((item, index) => (
                 <div key={item.id} className='flex w-[15rem] flex-col gap-2 shadow-inner p-4'>
                     <div className='bg-blue-400 p-4 rounded-md'>
                         <dt>{ item.name }</dt>  
@@ -71,12 +78,22 @@ export default function Items() {
             )) }
         </dl>
 
+    )
+  }
+
+  return (
+      <Layout>
+        <div className='flex justify-center'>
+          <input placeholder='Search for item' value={search} onChange={e => setSearch(e.target.value)} className='bg-gray-100 border rounded-md p-2 w-[20rem] my-4' />
+        </div>
+
+        {renderAllItems(search)}
         {
           isUpdate
           &&
           (
           <form className='flex justify-center flex-col items-center gap-2 pb-10'>
-          <p>Upate Item</p>
+            <p>Upate Item</p>
             <input name="name" type="text" value={updateItemState.name} onChange={e => setUpdateItemState({ ...updateItemState, name: e.target.value})} placeholder='Name' className='bg-gray-100 p-2 rounded-md ' />
             <input name="name" type="number" value={updateItemState.price} onChange={e => setUpdateItemState({ ...updateItemState, price: e.target.value})} placeholder='Name' className='bg-gray-100 p-2 rounded-md ' />
             <button className='bg-blue-300 p-2 rounded-md' onClick={handleSubmit}>Update Item</button>
