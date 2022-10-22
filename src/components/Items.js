@@ -7,6 +7,7 @@ export default function Items() {
 
     const [ data, setData ] = useState([]);
     const [ search, setSearch ] = useState('');
+    const [ sortItems, setSortItems ] = useState(false);
 
     const [ isUpdate, setIsUpdate ] = useState(false);
     const [ updateItemState, setUpdateItemState ] = useState({
@@ -55,11 +56,16 @@ export default function Items() {
     const res = fetch(`http://localhost:3000/items/${updateItemState.id}`, requestOptions);
   }
 
+    const handleSortItems = () => {
+      const sortedData = data.sort((a,b) => a.price - b.price);
+      setSortItems(sortedData);
+    }
+
   const renderAllItems = (search) => {
 
     return  (
         <dl className='flex flex-wrap gap-4 p-4'>
-            { data.filter(items => {
+            { (sortItems ? sortItems : data).filter(items => {
               if(search === '') {
                 return items;
               } else if(items.name.toLowerCase().includes(search.toLowerCase())) {
@@ -79,12 +85,16 @@ export default function Items() {
         </dl>
 
     )
-  }
+  }; 
 
   return (
       <Layout>
         <div className='flex justify-center'>
           <input placeholder='Search for item' value={search} onChange={e => setSearch(e.target.value)} className='bg-gray-100 border rounded-md p-2 w-[20rem] my-4' />
+        </div>
+
+        <div className='flex justify-center'>
+          <button className='p-2 bg-blue-300 rounded-md' onClick={handleSortItems}>Sort by price</button>
         </div>
 
         {renderAllItems(search)}
